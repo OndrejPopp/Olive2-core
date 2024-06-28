@@ -50,7 +50,7 @@ bool AudioParams::operator==(const AudioParams &other) const
   return (format() == other.format()
           && sample_rate() == other.sample_rate()
           && time_base() == other.time_base()
-          && channel_layout() == other.channel_layout());
+          && channel_layout_mask() == other.channel_layout_mask());
 }
 
 bool AudioParams::operator!=(const AudioParams &other) const
@@ -132,11 +132,6 @@ rational AudioParams::bytes_per_channel_to_time(const int64_t &bytes) const
   return samples_to_time(bytes_to_samples(bytes * channel_count()));
 }
 
-int AudioParams::channel_count() const
-{
-  return channel_count_;
-}
-
 int AudioParams::bytes_per_sample_per_channel() const
 {
   return format_.byte_count();
@@ -150,14 +145,9 @@ int AudioParams::bits_per_sample() const
 bool AudioParams::is_valid() const
 {
   return (!time_base().isNull()
-          && channel_layout() > 0
+          && channel_layout_mask() > 0
           && format_ > SampleFormat::INVALID
           && format_ < SampleFormat::COUNT);
-}
-
-void AudioParams::calculate_channel_count()
-{
-  channel_count_ = av_get_channel_layout_nb_channels(channel_layout());
 }
 
 }
